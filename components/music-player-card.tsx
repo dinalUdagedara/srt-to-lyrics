@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Card, CardBody, Image, Button, Slider } from "@nextui-org/react";
+import { Card, CardBody, Button, Slider } from "@nextui-org/react";
 import SrtParser2 from "srt-parser-2";
 import { IoPauseCircle, IoPlayCircle } from "react-icons/io5";
 import { GiPreviousButton } from "react-icons/gi";
@@ -7,9 +7,9 @@ import { GiNextButton } from "react-icons/gi";
 import { CiShuffle } from "react-icons/ci";
 import { RiRepeatOneLine } from "react-icons/ri";
 import { FaHeart } from "react-icons/fa";
-import { AlbumIcon } from "lucide-react";
 import AlbumCover from "./album-cover-lyrics";
 import { StaticImageData } from "next/image";
+import { useLyricsContext } from "@/hooks/use-lyric-sync";
 
 interface MusicPlayerProps {
   srtContent: string;
@@ -36,7 +36,6 @@ export default function MusicPlayerCard({
   albumName,
 }: MusicPlayerProps) {
   const [subtitles, setSubtitles] = useState<Subtitle[]>([]);
-  const [currentLyric, setCurrentLyric] = useState<string>("");
   const [liked, setLiked] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -44,6 +43,10 @@ export default function MusicPlayerCard({
   const [isRepeat, setIsRepeat] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { currentLyric, previousLyric, nextLyric } = useLyricsContext(
+    subtitles,
+    currentTime
+  );
 
   useEffect(() => {
     const parser = new SrtParser2();
@@ -51,36 +54,10 @@ export default function MusicPlayerCard({
     setSubtitles(parsedSrt);
   }, [srtContent]);
 
-  const timeToMilliseconds = (time: string) => {
-    const [hours, minutes, seconds] = time.split(":");
-    const [secs, millis] = seconds.split(",");
-    return (
-      parseInt(hours, 10) * 3600000 +
-      parseInt(minutes, 10) * 60000 +
-      parseInt(secs, 10) * 1000 +
-      parseInt(millis, 10)
-    );
-  };
-
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const updateLyric = () => {
-    if (audioRef.current) {
-      const currentTimeMs = audioRef.current.currentTime * 1000;
-      setCurrentTime(audioRef.current.currentTime);
-
-      const currentSubtitle = subtitles.find(
-        (subtitle) =>
-          currentTimeMs >= timeToMilliseconds(subtitle.startTime) &&
-          currentTimeMs <= timeToMilliseconds(subtitle.endTime)
-      );
-
-      setCurrentLyric(currentSubtitle?.text || "");
-    }
   };
 
   const handleLoadedMetadata = () => {
@@ -103,7 +80,6 @@ export default function MusicPlayerCard({
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
-      updateLyric();
     }
   };
 
@@ -158,7 +134,12 @@ export default function MusicPlayerCard({
       <CardBody>
         <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
           <div className="relative col-span-6 md:col-span-4">
-            <AlbumCover currentLyric={currentLyric} albumArt={albumArt} />
+            <AlbumCover
+              currentLyric={currentLyric}
+              albumArt={albumArt}
+              nextLyric={nextLyric}
+              previousLyric={previousLyric}
+            />
           </div>
 
           <div className="flex flex-col col-span-6 md:col-span-8">

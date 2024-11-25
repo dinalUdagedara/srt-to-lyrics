@@ -3,11 +3,18 @@ import React from "react";
 import Image, { StaticImageData } from "next/image";
 
 interface AlbumCoverProps {
+  previousLyric: string;
   currentLyric: string;
+  nextLyric: string;
   albumArt?: StaticImageData;
 }
 
-function AlbumCover({ currentLyric, albumArt }: AlbumCoverProps) {
+function AlbumCover({
+  currentLyric,
+  albumArt,
+  previousLyric,
+  nextLyric,
+}: AlbumCoverProps) {
   return (
     <div>
       {albumArt && (
@@ -20,10 +27,20 @@ function AlbumCover({ currentLyric, albumArt }: AlbumCoverProps) {
             src={albumArt}
             priority
           />
-          <div className="absolute inset-0 flex items-center justify-center rounded-xl ">
-            <p className="text-center font-semibold text-gray-200 text-lg  px-4">
+          <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl ">
+            {previousLyric && (
+              <p className="text-center text-sm text-gray-400 opacity-70 mb-1">
+                {previousLyric}
+              </p>
+            )}
+            <p className="text-center font-semibold text-gray-200 px-2 py-1 bg-black/50 rounded">
               {currentLyric || "♪ ♪ ♪"}
             </p>
+            {nextLyric && (
+              <p className="text-center text-sm text-gray-400 opacity-70 mt-1">
+                {nextLyric}
+              </p>
+            )}
           </div>
         </div>
       )}
