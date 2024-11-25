@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import SrtParser2 from "srt-parser-2";
 import MusicPlayerCard from "./music-player-card";
+import AlbumCoverImage from "@/public/assets/start-boy-cover.png"
 
 type Subtitle = {
   id: string;
@@ -74,7 +75,7 @@ const LyricsPlayer = ({
       <MusicPlayerCard
         srtContent={srtContent}
         audioSrc={audioSrc}
-        albumArt="https://nextui.org/images/album-cover.png"
+        albumArt={AlbumCoverImage}
         songName="Lonely Night"
         artistName="The Weeknd"
         albumName="Star Boy"

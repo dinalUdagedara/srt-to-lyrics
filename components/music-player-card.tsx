@@ -7,11 +7,14 @@ import { GiNextButton } from "react-icons/gi";
 import { CiShuffle } from "react-icons/ci";
 import { RiRepeatOneLine } from "react-icons/ri";
 import { FaHeart } from "react-icons/fa";
+import { AlbumIcon } from "lucide-react";
+import AlbumCover from "./album-cover-lyrics";
+import { StaticImageData } from "next/image";
 
 interface MusicPlayerProps {
   srtContent: string;
   audioSrc: string;
-  albumArt?: string;
+  albumArt?: StaticImageData;
   songName?: string;
   albumName?: string;
   artistName?: string;
@@ -149,20 +152,13 @@ export default function MusicPlayerCard({
   return (
     <Card
       isBlurred
-      className="border-none bg-background/60 dark:bg-default-100/50 max-w-[610px]"
+      className="border-none bg-background/60 dark:bg-default-100/50 max-w-[610px] "
       shadow="sm"
     >
       <CardBody>
         <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
           <div className="relative col-span-6 md:col-span-4">
-            <Image
-              alt="Album cover"
-              className="object-cover"
-              height={200}
-              shadow="md"
-              src={albumArt}
-              width="100%"
-            />
+            <AlbumCover currentLyric={currentLyric} albumArt={albumArt} />
           </div>
 
           <div className="flex flex-col col-span-6 md:col-span-8">
@@ -185,12 +181,6 @@ export default function MusicPlayerCard({
                   fill={liked ? "grey" : "red"}
                 />
               </Button>
-            </div>
-
-            <div className="mt-4 px-2 py-3 rounded-lg bg-gray-100 dark:bg-gray-700/50">
-              <p className="text-center text-lg font-medium min-h-[2em]">
-                {currentLyric || "♪ ♪ ♪"}
-              </p>
             </div>
 
             <div className="flex flex-col mt-4 gap-1">
