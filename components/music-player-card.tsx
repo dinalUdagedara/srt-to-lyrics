@@ -128,12 +128,12 @@ export default function MusicPlayerCard({
   return (
     <Card
       isBlurred
-      className="border-none bg-background/60 dark:bg-default-100/50 max-w-[610px] "
-      shadow="sm"
+      className="border-none bg-background/60 dark:bg-default-100/50 md:min-w-[600px] md:min-h-[280px]"
+      shadow="lg"
     >
       <CardBody>
         <div className="grid grid-cols-6 md:grid-cols-12 gap-6 md:gap-4 items-center justify-center">
-          <div className="relative col-span-6 md:col-span-4">
+          <div className="relative col-span-6 md:col-span-6">
             <AlbumCover
               currentLyric={currentLyric}
               albumArt={albumArt}
@@ -142,7 +142,7 @@ export default function MusicPlayerCard({
             />
           </div>
 
-          <div className="flex flex-col col-span-6 md:col-span-8">
+          <div className="flex flex-col col-span-6 md:col-span-6 pl-2">
             <div className="flex justify-between items-start">
               <div className="flex flex-col gap-0">
                 <h3 className="font-semibold text-foreground/90">{songName}</h3>
