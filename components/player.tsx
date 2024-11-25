@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import SrtParser2 from "srt-parser-2"; 
+import SrtParser2 from "srt-parser-2";
+import MusicPlayerCard from "./music-player-card";
 
 type Subtitle = {
   id: string;
@@ -58,18 +59,26 @@ const LyricsPlayer = ({
 
   return (
     <div>
-      {/* Audio Player */}
-      <audio
+      {/* <audio
         ref={audioRef}
         src={audioSrc}
         controls
         onTimeUpdate={updateLyric}
       />
 
-      {/* Display current lyric */}
       <div className="mt-10">
         <h2>{currentLyric}</h2>
-      </div>
+      </div> */}
+
+      {/* <MusicPlayerCard /> */}
+      <MusicPlayerCard
+        srtContent={srtContent}
+        audioSrc={audioSrc}
+        albumArt="https://nextui.org/images/album-cover.png"
+        songName="Lonely Night"
+        artistName="The Weeknd"
+        albumName="Star Boy"
+      />
     </div>
   );
 };

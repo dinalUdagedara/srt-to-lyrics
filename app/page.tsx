@@ -13,7 +13,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full justify-center  items-center gap-10 pt-10">
-      <h1>Song Lyrics Player</h1>
       {srtContent && (
         <LyricsPlayer
           srtContent={srtContent}
