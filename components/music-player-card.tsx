@@ -129,7 +129,7 @@ export default function MusicPlayerCard({
   return (
     <Card
       isBlurred
-      className="border-none bg-background/60 dark:bg-default-100/50 md:min-w-[600px] md:min-h-[280px]"
+      className="border-none bg-background/60 dark:bg-default-100/50 md:min-w-[600px] md:min-h-[280px] bg-slate-200"
       shadow="lg"
     >
       <CardBody>
@@ -255,7 +255,7 @@ export default function MusicPlayerCard({
             </div>
           </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-4 ">
           <AudioVisualizer audioRef={audioRef} isPlaying={isPlaying} />
         </div>
       </CardBody>
