@@ -10,6 +10,7 @@ import { FaHeart } from "react-icons/fa";
 import AlbumCover from "./album-cover-lyrics";
 import { StaticImageData } from "next/image";
 import { useLyricsContext } from "@/hooks/use-lyric-sync";
+import AudioVisualizer from "./audio-visualizer";
 
 interface MusicPlayerProps {
   srtContent: string;
@@ -253,6 +254,9 @@ export default function MusicPlayerCard({
               </Button>
             </div>
           </div>
+        </div>
+        <div className="mt-4">
+          <AudioVisualizer audioRef={audioRef} isPlaying={isPlaying} />
         </div>
       </CardBody>
     </Card>

@@ -26,7 +26,7 @@ export function useLyricsContext(subtitles: Subtitle[], currentTime: number) {
   useEffect(() => {
     if (subtitles.length === 0) return;
 
-    const currentTimeMs = currentTime * 1000;
+    const currentTimeMs = (currentTime + 0.7) * 1000;
     const currentSubtitleIndex = subtitles.findIndex(
       (subtitle) =>
         currentTimeMs >= timeToMilliseconds(subtitle.startTime) &&

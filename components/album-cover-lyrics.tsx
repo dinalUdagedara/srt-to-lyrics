@@ -43,7 +43,7 @@ function AlbumCover({
                   y: 0,
                   scale: 1,
                   transition: {
-                    duration: 0.7,
+                    duration: 0.6,
                     ease: "anticipate",
                   },
                 }}
@@ -52,7 +52,7 @@ function AlbumCover({
                   y: -50,
                   scale: 0.9,
                   transition: {
-                    duration: 0.7,
+                    duration: 0.6,
                     ease: "anticipate",
                   },
                 }}
