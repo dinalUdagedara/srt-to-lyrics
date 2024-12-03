@@ -123,11 +123,11 @@ export default function AudioVisualizer({
   }, [audioRef, isPlaying]);
 
   return (
-    <>
+    <div className=" bg-sla rounded-lg">
       <canvas
         ref={canvasRef}
         style={{ width: "100%", height: "100px" }}
       ></canvas>
-    </>
+    </div>
   );
 }
