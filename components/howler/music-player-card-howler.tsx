@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Card, CardBody, Button, Slider } from "@nextui-org/react";
 import SrtParser2 from "srt-parser-2";
 import { IoPauseCircle, IoPlayCircle } from "react-icons/io5";
@@ -11,7 +11,8 @@ import AlbumCover from "../album-cover-lyrics";
 import { StaticImageData } from "next/image";
 import { useLyricsContext } from "@/hooks/use-lyric-sync";
 import AudioVisualizer from "./audio-visualizer-howl";
-import { Howl, Howler } from "howler";
+import { Howl } from "howler";
+import { debounce, formatTime } from "@/utils/functions";
 
 interface MusicPlayerProps {
   srtContent: string;
@@ -44,9 +45,10 @@ export default function MusicPlayerCard({
   const [duration, setDuration] = useState(0);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
+  const [isSeeking, setIsSeeking] = useState(false);
 
   // Reference to Howl object for controlling the audio
-  const howlRef = useRef<Howl | null>(null);
+  const audioTrack = useRef<Howl | null>(null);
 
   const { currentLyric, previousLyric, nextLyric } = useLyricsContext(
     subtitles,
@@ -61,11 +63,11 @@ export default function MusicPlayerCard({
 
   useEffect(() => {
     // Initialize Howler when the component mounts
-    howlRef.current = new Howl({
+    audioTrack.current = new Howl({
       src: [audioSrc],
       html5: true, // Ensures Howler uses HTML5 audio for larger files
       onload: () => {
-        setDuration(howlRef.current?.duration() || 0);
+        setDuration(audioTrack.current?.duration() || 0);
       },
       onplay: () => {
         setIsPlaying(true);
@@ -80,64 +82,51 @@ export default function MusicPlayerCard({
     });
 
     return () => {
-      howlRef.current?.unload(); // Clean up Howler on component unmount
+      audioTrack.current?.unload(); // Clean up Howler on component unmount
     };
   }, [audioSrc]);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   const togglePlay = () => {
-    if (howlRef.current) {
+    if (audioTrack.current) {
       if (isPlaying) {
-        howlRef.current.pause();
+        audioTrack.current.pause();
       } else {
-        howlRef.current.play();
+        audioTrack.current.play();
       }
       setIsPlaying(!isPlaying);
     }
   };
 
-  const handleTimeUpdate = () => {
-    if (howlRef.current) {
-      setCurrentTime(howlRef.current.seek() as number);
-    }
-  };
-
-  const handleSliderChange = (value: number | number[]) => {
-    const newValue = Array.isArray(value) ? value[0] : value;
-    if (howlRef.current) {
-      howlRef.current.seek(newValue);
-      setCurrentTime(newValue);
-    }
+  const handleSliderChange = (value: any) => {
+    const newProgress = parseInt(value);
+    setCurrentTime(newProgress);
+    setIsSeeking(true);
+    debouncedSeek(newProgress);
   };
 
   const handleEnded = () => {
     setIsPlaying(false);
-    if (isRepeat && howlRef.current) {
-      howlRef.current.seek(0);
-      howlRef.current.play();
+    if (isRepeat && audioTrack.current) {
+      audioTrack.current.seek(0);
+      audioTrack.current.play();
     }
   };
 
   const skipForward = () => {
-    if (howlRef.current) {
+    if (audioTrack.current) {
       const newTime = Math.min(
-        (howlRef.current.seek() as number) + 10,
+        (audioTrack.current.seek() as number) + 10,
         duration
       );
-      howlRef.current.seek(newTime);
+      audioTrack.current.seek(newTime);
       setCurrentTime(newTime);
     }
   };
 
   const skipBackward = () => {
-    if (howlRef.current) {
-      const newTime = Math.max((howlRef.current.seek() as number) - 10, 0);
-      howlRef.current.seek(newTime);
+    if (audioTrack.current) {
+      const newTime = Math.max((audioTrack.current.seek() as number) - 10, 0);
+      audioTrack.current.seek(newTime);
       setCurrentTime(newTime);
     }
   };
@@ -147,27 +136,22 @@ export default function MusicPlayerCard({
   };
 
   const updateCurrentTime = () => {
-    if (howlRef.current && isPlaying) {
-      setCurrentTime(howlRef.current.seek() as number);
+    if (audioTrack.current && isPlaying && !isSeeking) {
+      setCurrentTime(audioTrack.current.seek() as number);
       requestAnimationFrame(updateCurrentTime);
     }
   };
 
-  useEffect(() => {
-    let interval: any;
-    if (isPlaying && howlRef) {
-      interval = setInterval(() => {
-        if (howlRef.current) {
-          setCurrentTime(howlRef.current.seek() || 0);
-          setDuration(howlRef.current.duration() || 0);
-        }
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
-
-    return () => clearInterval(interval);
-  }, [isPlaying, howlRef]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedSeek = useCallback(
+    debounce((newProgress: number) => {
+      if (audioTrack && audioTrack.current) {
+        audioTrack.current.seek(newProgress);
+      }
+      setIsSeeking(false);
+    }, 250),
+    [audioTrack]
+  );
 
   return (
     <Card
@@ -290,8 +274,8 @@ export default function MusicPlayerCard({
           </div>
         </div>
         <div className="mt-4 ">
-          {howlRef.current && (
-            <AudioVisualizer howlRef={howlRef} isPlaying={isPlaying} />
+          {audioTrack.current && (
+            <AudioVisualizer howlRef={audioTrack} isPlaying={isPlaying} />
           )}
         </div>
       </CardBody>
