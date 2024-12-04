@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from "react";
 
 interface VisualizerProps {
-  audioRef: React.RefObject<HTMLAudioElement>;
+  howlRef: React.RefObject<Howl | null>;
   isPlaying: boolean;
 }
 
 export default function AudioVisualizer({
-  audioRef,
+  howlRef,
   isPlaying,
 }: VisualizerProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -16,9 +16,8 @@ export default function AudioVisualizer({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const audio = audioRef.current;
     const canvasContext = canvas?.getContext("2d");
-    if (!canvas || !audio || !canvasContext) return;
+    if (!canvas || !canvasContext || !howlRef.current) return;
 
     if (!audioContextRef.current) {
       audioContextRef.current = new window.AudioContext();
@@ -30,11 +29,17 @@ export default function AudioVisualizer({
 
       if (!analyserRef.current) {
         const analyser = audioContext.createAnalyser();
-        const source = audioContext.createMediaElementSource(audio);
-        source.connect(analyser);
-        analyser.connect(audioContext.destination);
         analyser.fftSize = 512;
         analyserRef.current = analyser;
+
+        const soundSource = (howlRef.current as any)._sounds[0]?._node;
+
+        if (soundSource) {
+          const mediaElementSource =
+            audioContext.createMediaElementSource(soundSource);
+          mediaElementSource.connect(analyser);
+          analyser.connect(audioContext.destination);
+        }
       }
 
       const analyser = analyserRef.current;
@@ -54,41 +59,28 @@ export default function AudioVisualizer({
         canvasContext.beginPath();
 
         dataArray.forEach((item, index) => {
-          barHeight = item / 2; //  height of the bars
-
-          // Calculate the current position of the bar
+          barHeight = item / 2;
           const y = canvas.height - barHeight;
-
-          // Draw a line from the previous bar's top to the current bar's top
           if (index > 0) {
-            canvasContext.moveTo(prevX + barWidth / 2, prevY); // Move to the previous bar's top
-            canvasContext.lineTo(x + barWidth / 2, y); // Line to the current bar's top
+            canvasContext.moveTo(prevX + barWidth / 2, prevY);
+            canvasContext.lineTo(x + barWidth / 2, y);
           }
 
-          // Create a gradient for each bar
           const gradient = canvasContext.createLinearGradient(
             x,
-            y, // Start at the top of the bar
+            y,
             x,
-            canvas.height // End at the bottom of the bar
+            canvas.height
           );
-
-          // Map frequency data to two different colors
-          const topColor = `rgb(${Math.min(255, item * 2)}, 50, 150)`; // Color at the top of the bar
+          const topColor = `rgb(${Math.min(255, item * 2)}, 50, 150)`;
           const bottomColor = `rgb(${Math.min(
             255,
             (255 - item) * 1.5
-          )}, 100, 200)`; // Color at the bottom of the bar
+          )}, 100, 200)`;
+          gradient.addColorStop(0, topColor);
+          gradient.addColorStop(1, bottomColor);
 
-          // Add colors to the gradient
-          gradient.addColorStop(0, topColor); // Top of the bar
-          gradient.addColorStop(1, bottomColor); // Bottom of the bar
-
-          // Set the fillStyle to the gradient
           canvasContext.fillStyle = gradient;
-
-          //   canvasContext.fillStyle = "#ff5733"; // Hex color (solid red-orange)
-
           canvasContext.fillRect(
             x,
             canvas.height - barHeight,
@@ -96,17 +88,13 @@ export default function AudioVisualizer({
             barHeight
           );
 
-          // Store the previous position for the next line
           prevX = x;
           prevY = y;
-
-          // Move to the next position
           x += barWidth + 1;
         });
 
-        // Stroke the lines connecting the top of the bars
-        canvasContext.lineWidth = 6; //  thickness of the connecting lines
-        canvasContext.strokeStyle = "rgb(255, 255, 255)"; // color of connecting lines
+        canvasContext.lineWidth = 6;
+        canvasContext.strokeStyle = "rgb(255, 255, 255)";
         canvasContext.stroke();
 
         if (isPlaying) {
@@ -120,7 +108,11 @@ export default function AudioVisualizer({
     if (isPlaying) {
       handleAudioSetup();
     }
-  }, [audioRef, isPlaying]);
+
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, [howlRef, isPlaying]);
 
   return (
     <div className=" bg-sla rounded-lg">

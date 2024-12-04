@@ -153,6 +153,22 @@ export default function MusicPlayerCard({
     }
   };
 
+  useEffect(() => {
+    let interval: any;
+    if (isPlaying && howlRef) {
+      interval = setInterval(() => {
+        if (howlRef.current) {
+          setCurrentTime(howlRef.current.seek() || 0);
+          setDuration(howlRef.current.duration() || 0);
+        }
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [isPlaying, howlRef]);
+
   return (
     <Card
       isBlurred
@@ -273,9 +289,11 @@ export default function MusicPlayerCard({
             </div>
           </div>
         </div>
-        {/* <div className="mt-4 ">
-          <AudioVisualizer audioRef={audioRef} isPlaying={isPlaying} />
-        </div> */}
+        <div className="mt-4 ">
+          {howlRef.current && (
+            <AudioVisualizer howlRef={howlRef} isPlaying={isPlaying} />
+          )}
+        </div>
       </CardBody>
     </Card>
   );
