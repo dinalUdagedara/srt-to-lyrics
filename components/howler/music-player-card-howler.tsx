@@ -13,22 +13,7 @@ import { useLyricsContext } from "@/hooks/use-lyric-sync";
 import AudioVisualizer from "./audio-visualizer-howl";
 import { Howl } from "howler";
 import { debounce, formatTime } from "@/utils/functions";
-
-interface MusicPlayerProps {
-  srtContent: string;
-  audioSrc: string;
-  albumArt?: StaticImageData;
-  songName?: string;
-  albumName?: string;
-  artistName?: string;
-}
-
-type Subtitle = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  text: string;
-};
+import { MusicPlayerProps, Subtitle } from "@/utils/types";
 
 export default function MusicPlayerCard({
   srtContent,

@@ -1,9 +1,5 @@
+import { VisualizerProps } from "@/utils/types";
 import React, { useEffect, useRef } from "react";
-
-interface VisualizerProps {
-  howlRef: React.RefObject<Howl | null>;
-  isPlaying: boolean;
-}
 
 export default function AudioVisualizer({
   howlRef,

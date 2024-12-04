@@ -8,25 +8,10 @@ import { CiShuffle } from "react-icons/ci";
 import { RiRepeatOneLine } from "react-icons/ri";
 import { FaHeart } from "react-icons/fa";
 import AlbumCover from "./album-cover-lyrics";
-import { StaticImageData } from "next/image";
 import { useLyricsContext } from "@/hooks/use-lyric-sync";
 import AudioVisualizer from "./audio-visualizer";
-
-interface MusicPlayerProps {
-  srtContent: string;
-  audioSrc: string;
-  albumArt?: StaticImageData;
-  songName?: string;
-  albumName?: string;
-  artistName?: string;
-}
-
-type Subtitle = {
-  id: string;
-  startTime: string;
-  endTime: string;
-  text: string;
-};
+import { MusicPlayerProps, Subtitle } from "@/utils/types";
+import { formatTime } from "@/utils/functions";
 
 export default function MusicPlayerCard({
   srtContent,
@@ -54,12 +39,6 @@ export default function MusicPlayerCard({
     const parsedSrt = parser.fromSrt(srtContent);
     setSubtitles(parsedSrt);
   }, [srtContent]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
 
   const handleLoadedMetadata = () => {
     if (audioRef.current) {

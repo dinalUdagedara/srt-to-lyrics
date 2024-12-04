@@ -1,14 +1,8 @@
 "use client";
 import React from "react";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-
-interface AlbumCoverProps {
-  previousLyric: string;
-  currentLyric: string;
-  nextLyric: string;
-  albumArt?: StaticImageData;
-}
+import { AlbumCoverProps } from "@/utils/types";
 
 function AlbumCover({
   currentLyric,
