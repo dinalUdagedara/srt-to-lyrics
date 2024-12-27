@@ -142,6 +142,7 @@ export default function MusicPlayerCard({
         audioTrack.current.seek(newProgress);
 
         if (!audioTrack.current.playing()) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           cancelAnimationFrame(updateCurrentTime as any);
         }
       }
