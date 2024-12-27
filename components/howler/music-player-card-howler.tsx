@@ -8,7 +8,6 @@ import { CiShuffle } from "react-icons/ci";
 import { RiRepeatOneLine } from "react-icons/ri";
 import { FaHeart } from "react-icons/fa";
 import AlbumCover from "../album-cover-lyrics";
-import { StaticImageData } from "next/image";
 import { useLyricsContext } from "@/hooks/use-lyric-sync";
 import AudioVisualizer from "./audio-visualizer-howl";
 import { Howl } from "howler";
@@ -81,7 +80,7 @@ export default function MusicPlayerCard({
       setIsPlaying(!isPlaying);
     }
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSliderChange = (value: any) => {
     const newProgress = parseInt(value);
     setCurrentTime(newProgress);

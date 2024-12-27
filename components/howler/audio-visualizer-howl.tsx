@@ -27,7 +27,7 @@ export default function AudioVisualizer({
         const analyser = audioContext.createAnalyser();
         analyser.fftSize = 512;
         analyserRef.current = analyser;
-
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const soundSource = (howlRef.current as any)._sounds[0]?._node;
 
         if (soundSource) {
