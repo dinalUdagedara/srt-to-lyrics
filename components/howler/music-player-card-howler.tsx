@@ -86,6 +86,8 @@ export default function MusicPlayerCard({
     setCurrentTime(newProgress);
     setIsSeeking(true);
     debouncedSeek(newProgress);
+    requestAnimationFrame(updateCurrentTime);
+    setIsSeeking(false);
   };
 
   const handleEnded = () => {
@@ -120,9 +122,16 @@ export default function MusicPlayerCard({
   };
 
   const updateCurrentTime = () => {
-    if (audioTrack.current && isPlaying && !isSeeking) {
-      setCurrentTime(audioTrack.current.seek() as number);
-      requestAnimationFrame(updateCurrentTime);
+    if (audioTrack.current) {
+      const currentSeek = audioTrack.current.seek() as number;
+      if (!isSeeking) {
+        setCurrentTime(currentSeek);
+      }
+
+      // Continue animation frame if playing or seeking
+      if (audioTrack.current.playing() || isSeeking) {
+        requestAnimationFrame(updateCurrentTime);
+      }
     }
   };
 
@@ -131,6 +140,10 @@ export default function MusicPlayerCard({
     debounce((newProgress: number) => {
       if (audioTrack && audioTrack.current) {
         audioTrack.current.seek(newProgress);
+
+        if (!audioTrack.current.playing()) {
+          cancelAnimationFrame(updateCurrentTime as any);
+        }
       }
       setIsSeeking(false);
     }, 250),
