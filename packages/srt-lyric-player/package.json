@@ -1,9 +1,18 @@
 {
   "name": "srt-lyric-player",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A React component library for music players with real-time SRT lyric sync and audio visualization",
   "keywords": ["react", "music-player", "lyrics", "srt", "audio-visualizer"],
   "license": "MIT",
+  "homepage": "https://github.com/dinalUdagedara/srt-to-lyrics#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dinalUdagedara/srt-to-lyrics.git",
+    "directory": "packages/srt-lyric-player"
+  },
+  "bugs": {
+    "url": "https://github.com/dinalUdagedara/srt-to-lyrics/issues"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
