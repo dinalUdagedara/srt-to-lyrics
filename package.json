@@ -2,6 +2,7 @@
   "name": "srt-to-lyrics",
   "version": "0.1.0",
   "private": true,
+  "workspaces": ["packages/*"],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -9,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "srt-lyric-player": "*",
     "@nextui-org/react": "^2.4.8",
     "framer-motion": "^11.11.17",
     "howler": "^2.2.4",
