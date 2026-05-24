@@ -1,28 +1,22 @@
 "use client";
 import React from "react";
-// import MusicPlayerCard from "./music-player-card";
-import MusicPlayerCard from "./howler/music-player-card-howler";
-import AlbumCoverImage from "@/public/assets/start-boy-cover.png";
+import { MusicPlayer } from "srt-lyric-player";
+import "srt-lyric-player/dist/index.css";
 
 const LyricsPlayer = ({
-  srtContent,
   audioSrc,
 }: {
-  srtContent: string;
   audioSrc: string;
 }) => {
   return (
-    <div>
-      {/* <MusicPlayerCard /> */}
-      <MusicPlayerCard
-        srtContent={srtContent}
-        audioSrc={audioSrc}
-        albumArt={AlbumCoverImage}
-        songName="Lonely Night"
-        artistName="The Weeknd"
-        albumName="Star Boy"
-      />
-    </div>
+    <MusicPlayer
+      srtSrc="/assets/lonely-night.srt"
+      audioSrc={audioSrc}
+      albumArt="/assets/start-boy-cover.png"
+      songName="Lonely Night"
+      artistName="The Weeknd"
+      albumName="Star Boy"
+    />
   );
 };
 

@@ -1,0 +1,11 @@
+.slp-visualizer {
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.slp-canvas {
+  width: 100%;
+  height: 80px;
+  display: block;
+}
