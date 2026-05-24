@@ -3,12 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0d0d1a;
+  --foreground: #f3f4f6;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  background-image: radial-gradient(ellipse at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
+  min-height: 100vh;
   font-family: Arial, Helvetica, sans-serif;
 }
