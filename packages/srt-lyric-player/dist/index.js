@@ -397,7 +397,7 @@ function MusicPlayer({
   const [duration, setDuration] = (0, import_react3.useState)(0);
   const [isRepeat, setIsRepeat] = (0, import_react3.useState)(false);
   const [isShuffle, setIsShuffle] = (0, import_react3.useState)(false);
-  const [isSeeking, setIsSeeking] = (0, import_react3.useState)(false);
+  const isSeekingRef = (0, import_react3.useRef)(false);
   const audioTrack = (0, import_react3.useRef)(null);
   const { currentLyric, previousLyric, nextLyric } = useLyricsContext(
     subtitles,
@@ -448,10 +448,8 @@ function MusicPlayer({
   const handleSliderChange = (e) => {
     const newProgress = parseFloat(e.target.value);
     setCurrentTime(newProgress);
-    setIsSeeking(true);
+    isSeekingRef.current = true;
     debouncedSeek(newProgress);
-    requestAnimationFrame(updateCurrentTime);
-    setIsSeeking(false);
   };
   const handleEnded = () => {
     setIsPlaying(false);
@@ -473,23 +471,23 @@ function MusicPlayer({
     setCurrentTime(newTime);
   };
   const updateCurrentTime = () => {
-    if (!audioTrack.current) return;
-    const currentSeek = audioTrack.current.seek();
-    if (!isSeeking) setCurrentTime(currentSeek);
-    if (audioTrack.current.playing() || isSeeking) {
+    if (!audioTrack.current || isSeekingRef.current) return;
+    setCurrentTime(audioTrack.current.seek());
+    if (audioTrack.current.playing()) {
       requestAnimationFrame(updateCurrentTime);
     }
   };
   const debouncedSeek = (0, import_react3.useCallback)(
     debounce((newProgress) => {
+      var _a;
       if (audioTrack.current) {
         audioTrack.current.seek(newProgress);
-        if (!audioTrack.current.playing()) {
-          cancelAnimationFrame(updateCurrentTime);
-        }
       }
-      setIsSeeking(false);
-    }, 250),
+      isSeekingRef.current = false;
+      if ((_a = audioTrack.current) == null ? void 0 : _a.playing()) {
+        requestAnimationFrame(updateCurrentTime);
+      }
+    }, 100),
     [audioTrack]
   );
   const progressPct = duration > 0 ? currentTime / duration * 100 : 0;

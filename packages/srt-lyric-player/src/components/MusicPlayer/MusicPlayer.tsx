@@ -34,7 +34,7 @@ export default function MusicPlayer({
   const [duration, setDuration] = useState(0);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isShuffle, setIsShuffle] = useState(false);
-  const [isSeeking, setIsSeeking] = useState(false);
+  const isSeekingRef = useRef(false);
 
   const audioTrack = useRef<Howl | null>(null);
 
@@ -97,10 +97,8 @@ export default function MusicPlayer({
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newProgress = parseFloat(e.target.value);
     setCurrentTime(newProgress);
-    setIsSeeking(true);
+    isSeekingRef.current = true;
     debouncedSeek(newProgress);
-    requestAnimationFrame(updateCurrentTime);
-    setIsSeeking(false);
   };
 
   const handleEnded = () => {
@@ -126,10 +124,9 @@ export default function MusicPlayer({
   };
 
   const updateCurrentTime = () => {
-    if (!audioTrack.current) return;
-    const currentSeek = audioTrack.current.seek() as number;
-    if (!isSeeking) setCurrentTime(currentSeek);
-    if (audioTrack.current.playing() || isSeeking) {
+    if (!audioTrack.current || isSeekingRef.current) return;
+    setCurrentTime(audioTrack.current.seek() as number);
+    if (audioTrack.current.playing()) {
       requestAnimationFrame(updateCurrentTime);
     }
   };
@@ -139,12 +136,12 @@ export default function MusicPlayer({
     debounce((newProgress: number) => {
       if (audioTrack.current) {
         audioTrack.current.seek(newProgress);
-        if (!audioTrack.current.playing()) {
-          cancelAnimationFrame(updateCurrentTime as unknown as number);
-        }
       }
-      setIsSeeking(false);
-    }, 250),
+      isSeekingRef.current = false;
+      if (audioTrack.current?.playing()) {
+        requestAnimationFrame(updateCurrentTime);
+      }
+    }, 100),
     [audioTrack]
   );
 

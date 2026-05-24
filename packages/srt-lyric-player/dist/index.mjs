@@ -360,7 +360,7 @@ function MusicPlayer({
   const [duration, setDuration] = useState2(0);
   const [isRepeat, setIsRepeat] = useState2(false);
   const [isShuffle, setIsShuffle] = useState2(false);
-  const [isSeeking, setIsSeeking] = useState2(false);
+  const isSeekingRef = useRef2(false);
   const audioTrack = useRef2(null);
   const { currentLyric, previousLyric, nextLyric } = useLyricsContext(
     subtitles,
@@ -411,10 +411,8 @@ function MusicPlayer({
   const handleSliderChange = (e) => {
     const newProgress = parseFloat(e.target.value);
     setCurrentTime(newProgress);
-    setIsSeeking(true);
+    isSeekingRef.current = true;
     debouncedSeek(newProgress);
-    requestAnimationFrame(updateCurrentTime);
-    setIsSeeking(false);
   };
   const handleEnded = () => {
     setIsPlaying(false);
@@ -436,23 +434,23 @@ function MusicPlayer({
     setCurrentTime(newTime);
   };
   const updateCurrentTime = () => {
-    if (!audioTrack.current) return;
-    const currentSeek = audioTrack.current.seek();
-    if (!isSeeking) setCurrentTime(currentSeek);
-    if (audioTrack.current.playing() || isSeeking) {
+    if (!audioTrack.current || isSeekingRef.current) return;
+    setCurrentTime(audioTrack.current.seek());
+    if (audioTrack.current.playing()) {
       requestAnimationFrame(updateCurrentTime);
     }
   };
   const debouncedSeek = useCallback(
     debounce((newProgress) => {
+      var _a;
       if (audioTrack.current) {
         audioTrack.current.seek(newProgress);
-        if (!audioTrack.current.playing()) {
-          cancelAnimationFrame(updateCurrentTime);
-        }
       }
-      setIsSeeking(false);
-    }, 250),
+      isSeekingRef.current = false;
+      if ((_a = audioTrack.current) == null ? void 0 : _a.playing()) {
+        requestAnimationFrame(updateCurrentTime);
+      }
+    }, 100),
     [audioTrack]
   );
   const progressPct = duration > 0 ? currentTime / duration * 100 : 0;
