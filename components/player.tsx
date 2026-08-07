@@ -1,23 +1,8 @@
 "use client";
-import React from "react";
-import { MusicPlayer } from "srt-lyric-player";
-import "srt-lyric-player/dist/index.css";
 
-const LyricsPlayer = ({
-  audioSrc,
-}: {
-  audioSrc: string;
-}) => {
-  return (
-    <MusicPlayer
-      srtSrc="/assets/lonely-night.srt"
-      audioSrc={audioSrc}
-      albumArt="/assets/start-boy-cover.png"
-      songName="Lonely Night"
-      artistName="The Weeknd"
-      albumName="Star Boy"
-    />
-  );
-};
+import LyricsApp from "@/components/lyrics-app";
 
-export default LyricsPlayer;
+/** @deprecated Prefer importing LyricsApp directly — kept for simple page wiring */
+export default function LyricsPlayer() {
+  return <LyricsApp />;
+}

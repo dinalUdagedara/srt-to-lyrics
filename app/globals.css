@@ -3,15 +3,367 @@
 @tailwind utilities;
 
 :root {
-  --background: #0d0d1a;
-  --foreground: #f3f4f6;
+  --ink: #0e0c0a;
+  --ink-elevated: #171411;
+  --surface: rgba(28, 24, 20, 0.72);
+  --line: rgba(245, 230, 210, 0.1);
+  --cream: #f4ebe0;
+  --cream-muted: rgba(244, 235, 224, 0.55);
+  --cream-faint: rgba(244, 235, 224, 0.32);
+  --ember: #d4924a;
+  --ember-deep: #b87333;
+  --ember-soft: rgba(212, 146, 74, 0.18);
+  --background: var(--ink);
+  --foreground: var(--cream);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  background-image: radial-gradient(ellipse at 20% 30%, rgba(124, 58, 237, 0.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 60%);
-  min-height: 100vh;
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  color: var(--cream);
+  background: var(--ink);
+  font-family: var(--font-body), "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── App shell ─────────────────────────────── */
+
+.app-shell {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.app-ambient {
+  position: absolute;
+  inset: -10%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(60px) saturate(1.15);
+  opacity: 0.28;
+  transform: scale(1.08);
+  z-index: 0;
+  transition: background-image 0.6s ease;
+}
+
+.app-ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 55% at 15% 10%, rgba(212, 146, 74, 0.22), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 90% 85%, rgba(80, 110, 120, 0.18), transparent 50%),
+    linear-gradient(180deg, rgba(14, 12, 10, 0.55) 0%, rgba(14, 12, 10, 0.92) 100%);
+}
+
+.app-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.app-header,
+.app-main {
+  position: relative;
+  z-index: 2;
+}
+
+.app-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 0.75rem;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.brand-mark {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+  color: var(--cream);
+}
+
+.brand-tag {
+  font-size: 0.85rem;
+  color: var(--cream-muted);
+  letter-spacing: 0.01em;
+}
+
+.app-now {
+  margin: 0;
+  text-align: right;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--cream-faint);
+  display: none;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.app-now span {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: var(--cream);
+}
+
+.app-main {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  padding: 1rem clamp(1.25rem, 4vw, 3rem) 2.5rem;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.app-queue {
+  position: sticky;
+  top: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  padding: 1.1rem 0.85rem 0.85rem;
+  max-height: calc(100dvh - 6rem);
+  overflow: auto;
+}
+
+.app-stage {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+  padding-top: 0.35rem;
+}
+
+.app-player {
+  width: 100%;
+  max-width: 720px;
+}
+
+/* ── Playlist ──────────────────────────────── */
+
+.playlist-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 0.55rem;
+}
+
+.playlist-kicker {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.playlist-count {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream-faint);
+}
+
+.playlist-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.playlist-item {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.6rem 44px 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.55rem;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.playlist-item:hover {
+  background: rgba(244, 235, 224, 0.05);
+}
+
+.playlist-item.is-active {
+  background: var(--ember-soft);
+}
+
+.playlist-index {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--cream-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1rem;
+}
+
+.playlist-item.is-active .playlist-index {
+  color: var(--ember);
+}
+
+.playlist-eq {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--ember), var(--ember-deep));
+  box-shadow: 0 0 0 0 rgba(212, 146, 74, 0.45);
+  animation: eq-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes eq-pulse {
+  0%,
+  100% {
+    transform: scaleY(0.7);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scaleY(1.15);
+    opacity: 1;
+  }
+}
+
+.playlist-art-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--ink-elevated);
+}
+
+.playlist-art {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.playlist-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.playlist-title {
+  font-size: 0.92rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlist-artist {
+  font-size: 0.75rem;
+  color: var(--cream-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.playlist-dot {
+  margin: 0 0.35rem;
+  opacity: 0.5;
+}
+
+/* Package player — ambient theme bridge */
+.app-player .slp-card {
+  background: rgba(18, 15, 13, 0.82);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  max-width: none;
+}
+
+/* ── Responsive ────────────────────────────── */
+
+@media (min-width: 900px) {
+  .app-now {
+    display: flex;
+  }
+}
+
+@media (max-width: 899px) {
+  .app-main {
+    grid-template-columns: 1fr;
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .app-queue {
+    position: static;
+    order: 2;
+    max-height: none;
+  }
+
+  .app-stage {
+    order: 1;
+    padding-top: 0;
+  }
+
+  .app-header {
+    padding-top: calc(1.1rem + env(safe-area-inset-top));
+    align-items: flex-start;
+  }
+
+  .brand-mark {
+    font-size: clamp(1.75rem, 8vw, 2.25rem);
+  }
+}
+
+@media (max-width: 580px) {
+  .app-header {
+    padding-inline: 1rem;
+  }
+
+  .app-main {
+    padding-inline: 1rem;
+    gap: 1.25rem;
+  }
+
+  .playlist-item {
+    grid-template-columns: 1.4rem 40px 1fr;
+    gap: 0.55rem;
+  }
+
+  .playlist-art-wrap {
+    width: 40px;
+    height: 40px;
+  }
 }
