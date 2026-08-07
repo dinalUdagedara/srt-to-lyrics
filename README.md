@@ -12,7 +12,7 @@ Think Spotify’s lyrics view, but driven by `.srt` files you already have.
 
 - Real-time lyric sync from any `.srt` (URL or inline text)
 - Playlist queue with demo tracks
-- **Add your own songs** in the browser — drop audio + `.srt` (optional cover)
+- **Add your own songs** in the browser — choose audio + `.srt` (optional cover)
 - Fullscreen lyrics view
 - Live audio visualizer (Web Audio API + Canvas)
 - Branded Open Graph / favicon metadata for clean share previews
