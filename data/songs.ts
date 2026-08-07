@@ -3,12 +3,18 @@ export type Song = {
   songName: string;
   artistName: string;
   albumName: string;
-  /** Any playable URL — local `/assets/...` or remote CDN/S3/R2 */
+  /** Any playable URL — local `/assets/...`, remote CDN, or blob: from user upload */
   audioSrc: string;
-  /** Any fetchable SRT URL — same origin or CORS-enabled remote */
-  srtSrc: string;
+  /** Any fetchable SRT URL — same origin, CORS-enabled remote, or blob: */
+  srtSrc?: string;
+  /** Inline SRT text (used for user uploads so we don't re-fetch) */
+  srtContent?: string;
   albumArt: string;
+  /** True when added via the in-app upload UI (session-only) */
+  isUserAdded?: boolean;
 };
+
+export const DEFAULT_ALBUM_ART = "/assets/album-cover.png";
 
 /**
  * Demo catalog. Swap these URLs for remote hosts when you scale —

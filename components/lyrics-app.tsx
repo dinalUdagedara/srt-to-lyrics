@@ -1,14 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MusicPlayer } from "srt-lyric-player";
 import "srt-lyric-player/dist/index.css";
-import { playlist, type Song } from "@/data/songs";
+import { playlist as seedPlaylist, type Song } from "@/data/songs";
 import Playlist from "@/components/playlist";
 
+/** Match AnimatePresence exit duration so blob URLs stay valid while the player unmounts */
+const EXIT_REVOKE_MS = 400;
+
+function revokeSongUrls(song: Song) {
+  if (!song.isUserAdded) return;
+  if (song.audioSrc.startsWith("blob:")) URL.revokeObjectURL(song.audioSrc);
+  if (song.albumArt.startsWith("blob:")) URL.revokeObjectURL(song.albumArt);
+  if (song.srtSrc?.startsWith("blob:")) URL.revokeObjectURL(song.srtSrc);
+}
+
 export default function LyricsApp() {
-  const [current, setCurrent] = useState<Song>(playlist[0]);
+  const [songs, setSongs] = useState<Song[]>(seedPlaylist);
+  const [current, setCurrent] = useState<Song>(seedPlaylist[0]);
+  const songsRef = useRef(songs);
+  songsRef.current = songs;
+
+  useEffect(() => {
+    return () => {
+      songsRef.current.forEach(revokeSongUrls);
+    };
+  }, []);
+
+  const handleAdd = (song: Song) => {
+    setSongs((prev) => [...prev, song]);
+    setCurrent(song);
+  };
+
+  const handleRemove = (id: string) => {
+    const index = songs.findIndex((s) => s.id === id);
+    if (index === -1) return;
+
+    const target = songs[index];
+    const next = songs.filter((s) => s.id !== id);
+    const fallback = next.length > 0 ? next : seedPlaylist;
+
+    setSongs(fallback);
+
+    if (current.id === id) {
+      const nextCurrent =
+        next.length > 0
+          ? next[Math.min(index, next.length - 1)]
+          : seedPlaylist[0];
+      setCurrent(nextCurrent);
+      // Keep blob URLs alive through the outgoing player's exit animation
+      window.setTimeout(() => revokeSongUrls(target), EXIT_REVOKE_MS);
+    } else {
+      revokeSongUrls(target);
+    }
+  };
 
   return (
     <div className="app-shell">
@@ -33,9 +80,11 @@ export default function LyricsApp() {
       <main className="app-main">
         <aside className="app-queue">
           <Playlist
-            songs={playlist}
+            songs={songs}
             activeId={current.id}
             onSelect={setCurrent}
+            onAdd={handleAdd}
+            onRemove={handleRemove}
           />
         </aside>
 
@@ -53,6 +102,7 @@ export default function LyricsApp() {
                 key={current.id}
                 audioSrc={current.audioSrc}
                 srtSrc={current.srtSrc}
+                srtContent={current.srtContent}
                 albumArt={current.albumArt}
                 songName={current.songName}
                 artistName={current.artistName}
