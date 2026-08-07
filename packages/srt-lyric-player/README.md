@@ -8,12 +8,13 @@ Think Spotify's lyrics view, but driven by `.srt` files you already have.
 
 ## Features
 
-- 🎵 Real-time lyric sync from any `.srt` file (fetched by URL or passed as a string)
-- 🎨 Animated previous / current / next lyric overlay on album art (Framer Motion)
-- 📊 Live audio visualizer via Web Audio API + Canvas
-- 🎛️ Full player controls — play/pause, seek, repeat, shuffle
-- 💅 Zero dependency on Tailwind, NextUI, or any CSS framework
-- 🧩 Works in any React app (Next.js, Vite, CRA, etc.)
+- Real-time lyric sync from any `.srt` file (fetched by URL or passed as a string)
+- Animated previous / current / next lyric overlay on album art (Framer Motion)
+- Fullscreen lyrics view with live index sync
+- Live audio visualizer via Web Audio API + Canvas
+- Full player controls — play/pause, seek, repeat, shuffle
+- Zero dependency on Tailwind, NextUI, or any CSS framework
+- Works in any React app (Next.js, Vite, CRA, etc.)
 
 ---
 

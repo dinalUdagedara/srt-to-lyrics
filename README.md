@@ -1,19 +1,30 @@
-# srt-to-lyrics
+# LyricSRT
 
 A Next.js music player with **real-time synchronized lyrics** powered by standard `.srt` subtitle files — and the home of the [`srt-lyric-player`](https://www.npmjs.com/package/srt-lyric-player) npm package.
+
+Think Spotify’s lyrics view, but driven by `.srt` files you already have.
 
 **[Live Demo →](https://srt-to-lyrics-ebon.vercel.app/)**
 
 ---
 
-## What this repo contains
+## Features
 
-This is a monorepo with two things:
+- Real-time lyric sync from any `.srt` (URL or inline text)
+- Playlist queue with demo tracks
+- **Add your own songs** in the browser — choose audio + `.srt` (optional cover)
+- Fullscreen lyrics view
+- Live audio visualizer (Web Audio API + Canvas)
+- Branded Open Graph / favicon metadata for clean share previews
+
+---
+
+## What’s in this repo
 
 | Path | What it is |
 |---|---|
-| `/` (root) | Next.js 15 demo app — a live showcase of the player |
-| `packages/srt-lyric-player/` | The standalone npm package anyone can install |
+| `/` (root) | **LyricSRT** — Next.js 15 demo app |
+| `packages/srt-lyric-player/` | Standalone React npm package |
 
 ---
 
@@ -24,8 +35,8 @@ npm install srt-lyric-player framer-motion howler
 ```
 
 ```tsx
-import { MusicPlayer } from 'srt-lyric-player'
-import 'srt-lyric-player/dist/index.css'
+import { MusicPlayer } from "srt-lyric-player";
+import "srt-lyric-player/dist/index.css";
 
 <MusicPlayer
   audioSrc="/song.mp3"
@@ -34,7 +45,7 @@ import 'srt-lyric-player/dist/index.css'
   songName="Song Title"
   artistName="Artist"
   albumName="Album"
-/>
+/>;
 ```
 
 Full docs → [npmjs.com/package/srt-lyric-player](https://www.npmjs.com/package/srt-lyric-player)
@@ -43,11 +54,11 @@ Full docs → [npmjs.com/package/srt-lyric-player](https://www.npmjs.com/package
 
 ## How it works
 
-1. Parses `.srt` timestamps using [`srt-parser-2`](https://www.npmjs.com/package/srt-parser-2)
-2. Drives audio playback with [Howler.js](https://howlerjs.com/) (HTML5 mode)
-3. On every animation frame, maps `currentTime + 0.7s` look-ahead → current lyric
-4. Animates previous / current / next lyric over the album art with [Framer Motion](https://www.framer-motion.com/)
-5. Feeds audio into a Web Audio API `AnalyserNode` and renders gradient bars + wave line on `<canvas>`
+1. Parses `.srt` timestamps with [`srt-parser-2`](https://www.npmjs.com/package/srt-parser-2)
+2. Plays audio with [Howler.js](https://howlerjs.com/) (HTML5 mode)
+3. Maps `currentTime + 0.7s` look-ahead → current lyric each frame
+4. Animates previous / current / next lyric over album art with [Framer Motion](https://www.framer.com/motion/)
+5. Feeds audio into an `AnalyserNode` and draws the visualizer on `<canvas>`
 
 ---
 
@@ -59,7 +70,7 @@ Full docs → [npmjs.com/package/srt-lyric-player](https://www.npmjs.com/package
 | Animations | Framer Motion |
 | Audio engine | Howler.js |
 | SRT parsing | srt-parser-2 |
-| Audio visualizer | Web Audio API + Canvas |
+| Visualizer | Web Audio API + Canvas |
 | Package bundler | tsup (ESM + CJS + types) |
 
 ---
@@ -69,16 +80,23 @@ Full docs → [npmjs.com/package/srt-lyric-player](https://www.npmjs.com/package
 ```bash
 git clone https://github.com/dinalUdagedara/srt-to-lyrics.git
 cd srt-to-lyrics
-npm install          # installs root deps + links the package via workspaces
-npm run dev          # starts Next.js at localhost:3000
+npm install
+npm run dev
 ```
 
-To work on the package:
+Package watch mode:
 
 ```bash
 cd packages/srt-lyric-player
-npm run dev          # tsup --watch, rebuilds dist on every save
+npm run dev
 ```
+
+### Add a demo song to the catalog
+
+1. Drop `song.mp3`, `song.srt`, and cover art into `public/assets/`
+2. Append an entry in `data/songs.ts`
+
+Users can also add tracks at runtime via **+ Add** in the queue (session-only).
 
 ---
 
@@ -86,16 +104,16 @@ npm run dev          # tsup --watch, rebuilds dist on every save
 
 ```
 srt-to-lyrics/
-  app/                        # Next.js app router
-  components/                 # Demo app components
-  public/assets/              # Sample audio, SRT, album art
+  app/                      # Next.js app router + OG/favicon routes
+  components/               # LyricSRT shell (playlist, add song, player)
+  data/songs.ts             # Demo playlist catalog
+  lib/                      # Brand + icon helpers
+  public/assets/            # Sample audio, SRT, album art
   packages/
-    srt-lyric-player/         # npm package source
-      src/
-        components/           # MusicPlayer, AudioVisualizer, AlbumCover, icons
-        hooks/                # useLyricsContext
-        utils/                # types, debounce, formatTime
-      dist/                   # built output (ESM + CJS + CSS)
+    srt-lyric-player/       # npm package
+      src/components/       # MusicPlayer, visualizer, album cover, fullscreen
+      src/hooks/            # useLyricsContext
+      dist/                 # ESM + CJS + CSS
 ```
 
 ---
