@@ -24,7 +24,10 @@ export default function OpenGraphImage() {
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
             display: "flex",
             backgroundImage:
               "radial-gradient(ellipse 70% 55% at 12% 18%, rgba(212,146,74,0.28), transparent 58%), radial-gradient(ellipse 55% 45% at 88% 82%, rgba(80,110,120,0.22), transparent 52%)",
