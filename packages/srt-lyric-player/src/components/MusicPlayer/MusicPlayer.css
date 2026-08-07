@@ -1,13 +1,13 @@
 .slp-card {
-  background: #111827;
+  background: #171411;
   border-radius: 20px;
-  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
   padding: 24px;
   max-width: 680px;
   width: 100%;
-  color: #f3f4f6;
+  color: #f4ebe0;
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: inherit, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .slp-body {
@@ -21,6 +21,7 @@
   .slp-body {
     grid-template-columns: 1fr;
     justify-items: center;
+    gap: 18px;
   }
   .slp-card {
     padding: 16px;
@@ -41,6 +42,13 @@
   gap: 8px;
 }
 
+.slp-song-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
 .slp-song-meta {
   display: flex;
   flex-direction: column;
@@ -51,7 +59,7 @@
 .slp-song-name {
   font-weight: 700;
   font-size: 1.1rem;
-  color: #ffffff;
+  color: #f4ebe0;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -60,13 +68,13 @@
 
 .slp-artist-name {
   font-size: 0.85rem;
-  color: rgba(243, 244, 246, 0.6);
+  color: rgba(244, 235, 224, 0.6);
   margin: 0;
 }
 
 .slp-album-name {
   font-size: 0.78rem;
-  color: rgba(243, 244, 246, 0.35);
+  color: rgba(244, 235, 224, 0.35);
   margin: 2px 0 0;
 }
 
@@ -105,7 +113,7 @@
   cursor: pointer;
   background: linear-gradient(
     to right,
-    #7c3aed var(--slp-progress, 0%),
+    #d4924a var(--slp-progress, 0%),
     rgba(255, 255, 255, 0.15) var(--slp-progress, 0%)
   );
 }
@@ -164,11 +172,11 @@
 }
 
 .slp-icon-btn-active {
-  color: #7c3aed !important;
+  color: #d4924a !important;
 }
 
 .slp-play-btn {
-  background: #7c3aed;
+  background: #d4924a;
   border: none;
   cursor: pointer;
   width: 54px;
@@ -177,13 +185,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: #0e0c0a;
   transition: background 0.15s, transform 0.1s;
   flex-shrink: 0;
 }
 
 .slp-play-btn:hover {
-  background: #6d28d9;
+  background: #e0a45c;
   transform: scale(1.06);
 }
 

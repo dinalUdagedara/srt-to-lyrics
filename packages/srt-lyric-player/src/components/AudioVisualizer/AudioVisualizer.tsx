@@ -98,8 +98,8 @@ export default function AudioVisualizer({
             x,
             canvas.height
           );
-          const topColor = `rgb(${Math.min(255, item * 2)}, 50, 150)`;
-          const bottomColor = `rgb(${Math.min(255, (255 - item) * 1.5)}, 100, 200)`;
+          const topColor = `rgb(${Math.min(255, 180 + item)}, ${Math.min(180, 90 + item / 2)}, 50)`;
+          const bottomColor = `rgb(${Math.min(220, 80 + item)}, ${Math.min(140, 40 + item / 3)}, 30)`;
           gradient.addColorStop(0, topColor);
           gradient.addColorStop(1, bottomColor);
 
