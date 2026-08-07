@@ -1,14 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MusicPlayer } from "srt-lyric-player";
 import "srt-lyric-player/dist/index.css";
-import { playlist, type Song } from "@/data/songs";
+import { playlist as seedPlaylist, type Song } from "@/data/songs";
 import Playlist from "@/components/playlist";
 
+function revokeSongUrls(song: Song) {
+  if (!song.isUserAdded) return;
+  if (song.audioSrc.startsWith("blob:")) URL.revokeObjectURL(song.audioSrc);
+  if (song.albumArt.startsWith("blob:")) URL.revokeObjectURL(song.albumArt);
+  if (song.srtSrc?.startsWith("blob:")) URL.revokeObjectURL(song.srtSrc);
+}
+
 export default function LyricsApp() {
-  const [current, setCurrent] = useState<Song>(playlist[0]);
+  const [songs, setSongs] = useState<Song[]>(seedPlaylist);
+  const [current, setCurrent] = useState<Song>(seedPlaylist[0]);
+
+  useEffect(() => {
+    return () => {
+      songs.forEach(revokeSongUrls);
+    };
+    // Only revoke on unmount of the whole app shell
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleAdd = (song: Song) => {
+    setSongs((prev) => [...prev, song]);
+    setCurrent(song);
+  };
+
+  const handleRemove = (id: string) => {
+    setSongs((prev) => {
+      const target = prev.find((s) => s.id === id);
+      if (target) revokeSongUrls(target);
+      const next = prev.filter((s) => s.id !== id);
+      if (current.id === id) {
+        setCurrent(next[0] ?? seedPlaylist[0]);
+      }
+      return next.length > 0 ? next : seedPlaylist;
+    });
+  };
 
   return (
     <div className="app-shell">
@@ -33,9 +66,11 @@ export default function LyricsApp() {
       <main className="app-main">
         <aside className="app-queue">
           <Playlist
-            songs={playlist}
+            songs={songs}
             activeId={current.id}
             onSelect={setCurrent}
+            onAdd={handleAdd}
+            onRemove={handleRemove}
           />
         </aside>
 
@@ -53,6 +88,7 @@ export default function LyricsApp() {
                 key={current.id}
                 audioSrc={current.audioSrc}
                 srtSrc={current.srtSrc}
+                srtContent={current.srtContent}
                 albumArt={current.albumArt}
                 songName={current.songName}
                 artistName={current.artistName}
