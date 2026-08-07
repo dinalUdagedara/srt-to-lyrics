@@ -29,4 +29,7 @@ export interface AlbumCoverProps {
   currentLyric: string;
   nextLyric: string;
   albumArt?: string;
+  onOpenFullscreen?: () => void;
+  /** Hide overlay lyrics (e.g. while fullscreen lyrics are open) */
+  hideLyrics?: boolean;
 }
