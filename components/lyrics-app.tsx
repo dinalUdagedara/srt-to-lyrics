@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MusicPlayer } from "srt-lyric-player";
 import "srt-lyric-player/dist/index.css";
 import { playlist as seedPlaylist, type Song } from "@/data/songs";
 import Playlist from "@/components/playlist";
+
+/** Match AnimatePresence exit duration so blob URLs stay valid while the player unmounts */
+const EXIT_REVOKE_MS = 400;
 
 function revokeSongUrls(song: Song) {
   if (!song.isUserAdded) return;
@@ -17,13 +20,13 @@ function revokeSongUrls(song: Song) {
 export default function LyricsApp() {
   const [songs, setSongs] = useState<Song[]>(seedPlaylist);
   const [current, setCurrent] = useState<Song>(seedPlaylist[0]);
+  const songsRef = useRef(songs);
+  songsRef.current = songs;
 
   useEffect(() => {
     return () => {
-      songs.forEach(revokeSongUrls);
+      songsRef.current.forEach(revokeSongUrls);
     };
-    // Only revoke on unmount of the whole app shell
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleAdd = (song: Song) => {
@@ -32,15 +35,26 @@ export default function LyricsApp() {
   };
 
   const handleRemove = (id: string) => {
-    setSongs((prev) => {
-      const target = prev.find((s) => s.id === id);
-      if (target) revokeSongUrls(target);
-      const next = prev.filter((s) => s.id !== id);
-      if (current.id === id) {
-        setCurrent(next[0] ?? seedPlaylist[0]);
-      }
-      return next.length > 0 ? next : seedPlaylist;
-    });
+    const index = songs.findIndex((s) => s.id === id);
+    if (index === -1) return;
+
+    const target = songs[index];
+    const next = songs.filter((s) => s.id !== id);
+    const fallback = next.length > 0 ? next : seedPlaylist;
+
+    setSongs(fallback);
+
+    if (current.id === id) {
+      const nextCurrent =
+        next.length > 0
+          ? next[Math.min(index, next.length - 1)]
+          : seedPlaylist[0];
+      setCurrent(nextCurrent);
+      // Keep blob URLs alive through the outgoing player's exit animation
+      window.setTimeout(() => revokeSongUrls(target), EXIT_REVOKE_MS);
+    } else {
+      revokeSongUrls(target);
+    }
   };
 
   return (
